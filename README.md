@@ -7,35 +7,6 @@ Here’s a complete and well-structured `README.md` for your GitHub repository b
 
 This repository provides a modular and educational implementation of a GPT-2-like Transformer language model using **PyTorch**, built from scratch. It includes tools for training, inference, evaluation, and tokenization.
 
----
-
-##  Project Structure
-
-```
-
-GPT2/
-├── load\_model/
-│   ├── load\_local\_models.py         # Load pretrained weights
-│   └── loading\_model\_original\_gpt.py
-├── model\_configuration/
-│   └── gpt\_model.py                 # GPT model definition
-├── processing/
-│   ├── data\_loader\_train\_val.py     # Dataset & Dataloader logic
-│   ├── loss\_calculate.py            # Loss and perplexity computation
-│   ├── save\_load\_weights.py         # Saving/loading utilities
-│   └── Text2TokenViceVersa.py       # Tokenization helpers using tiktoken
-├── transformer/
-│   ├── transformer\_architecture.py  # Transformer block
-│   ├── masked\_multihead\_attention.py
-│   ├── feed\_forward\_NN.py
-│   ├── layer\_norm.py
-│   └── gelu.py
-├── inference\_model.py              # Inference script for text generation
-├── TrainAndSaveGptWeights.py      # Training loop with evaluation
-├── requirements.txt               # Python dependencies
-├── README.md                      # You're here!
-
-````
 
 ---
 
