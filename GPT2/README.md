@@ -53,6 +53,11 @@ from sagar_nueron_gpt2.inference_model import Inferencing
 exe = Inferencing()
 exe.inference()
 ```
+This is How it looks: 
+#### This kind of file will be produced after training.In the folder you gave name as input while training. 
+![](2.jpeg)
+#### This is an example on how to give input while training.
+![](1.jpeg)
 
 ---
 
