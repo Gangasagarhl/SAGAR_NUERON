@@ -8,7 +8,7 @@
 
 ---
 ### Archirtecture of GPT2
-![](gpt2_architecture.png)
+![](1.png)
 ###  Installation
 
 Make sure you have Python installed, then run the following commands to set up the environment:
