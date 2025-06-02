@@ -1,4 +1,7 @@
 torch
 tiktoken
-tensorflow>=2.15.0 
-tqdm>=4.66
+math
+urllib
+os
+time
+
