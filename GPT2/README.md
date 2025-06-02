@@ -42,6 +42,8 @@ exe.execute()
 ---
 
 ###  Inference from Trained Model
+But the model information will be there in the folder where the weights and information:
+
 
 To run inference using the model you trained:
 
