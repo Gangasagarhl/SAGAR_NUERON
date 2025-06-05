@@ -39,7 +39,7 @@ pip install numpy
 To train and save your GPT-2 model weights, run the following:
 
 ```python
-from sagar_nueron_gpt2.TrainAndSaveGptWeights import Execute
+from sagar_neuron_gpt2.TrainAndSaveGptWeights import Execute
 
 exe = Execute()
 exe.execute()
@@ -52,7 +52,7 @@ exe.execute()
 To run inference using the model you trained:
 
 ```python
-from sagar_nueron_gpt2.inference_model import Inferencing
+from sagar_neuron_gpt2.inference_model import Inferencing
 
 exe = Inferencing()
 exe.inference()
