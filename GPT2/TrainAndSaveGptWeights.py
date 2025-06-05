@@ -4,10 +4,10 @@ import tiktoken
 import os
 import time
 
-from sagar_nueron_gpt2.processing.data_loader_train_val import DataProcessor_TrainValLoader
-from sagar_nueron_gpt2.processing.loss_calculate import CalculatLoss
-from sagar_nueron_gpt2.model_configuration.gpt_model import GPTModel
-from sagar_nueron_gpt2.processing.Text2TokenViceVersa import Converter
+from sagar_neuron_gpt2.processing.data_loader_train_val import DataProcessor_TrainValLoader
+from sagar_neuron_gpt2.processing.loss_calculate import CalculatLoss
+from sagar_neuron_gpt2.model_configuration.gpt_model import GPTModel
+from sagar_neuron_gpt2.processing.Text2TokenViceVersa import Converter
 
 ########################################## INITIALISATION ARENA #####################
 

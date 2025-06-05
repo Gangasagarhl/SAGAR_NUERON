@@ -1,6 +1,6 @@
 
 from torch import nn
-from sagar_nueron_gpt2.transfomer.gelu import GELU
+from sagar_neuron_gpt2.transfomer.gelu import GELU
 
 class FeedForward(nn.Module):
     def __init__(self, cfg):

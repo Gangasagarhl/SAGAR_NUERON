@@ -1,4 +1,4 @@
-from sagar_nueron_gpt2.model_configuration.gpt_model import GPTModel
+from sagar_neuron_gpt2.model_configuration.gpt_model import GPTModel
 import torch
 
 class LoadWeightsAndPrepareModel: 

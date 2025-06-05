@@ -1,26 +1,47 @@
 import torch 
-from sagar_nueron_gpt2.load_model.load_local_models import LoadWeightsAndPrepareModel
-from sagar_nueron_gpt2.processing.Text2TokenViceVersa import Converter
+from sagar_neuron_gpt2.load_model.load_local_models import LoadWeightsAndPrepareModel
+from sagar_neuron_gpt2.processing.Text2TokenViceVersa import Converter
 import tiktoken
 
 class Inference:
+    def __init__(self):
+        """Initialize with device detection."""
+        self.device = self._get_device()
+        print(f"Using device: {self.device}")
+    
+    def _get_device(self):
+        """Detect and return the best available device."""
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+            # For Apple Silicon Macs
+            return torch.device("mps")
+        else:
+            return torch.device("cpu")
+    
     def generate(self, model, idx, max_new_tokens, context_size, temperature=0.0, top_k=None, eos_id=None):
         """Generate text by sampling from the model."""
-        # Use the device of the model's first parameter
-        device = next(model.parameters()).device
+        # Ensure model is on the correct device
+        model = model.to(self.device)
+        
+        # Ensure input tensor is on the same device as model
+        idx = idx.to(self.device)
+        
         for _ in range(max_new_tokens):
-            idx_cond = idx[:, -context_size:].to(device)  # Ensure input is on model's device
+            idx_cond = idx[:, -context_size:].to(self.device)
+            
             with torch.no_grad():
                 logits = model(idx_cond)
+            
             logits = logits[:, -1, :]
-
+            
             # Filter logits with top_k sampling
             if top_k is not None:
                 # Keep only top_k values
                 top_logits, _ = torch.topk(logits, top_k)
-                min_val = top_logits[:, -1]
-                logits = torch.where(logits < min_val, torch.tensor(float("-inf")).to(device), logits)
-
+                min_val = top_logits[:, -1].unsqueeze(-1)  # Add dimension for broadcasting
+                logits = torch.where(logits < min_val, torch.tensor(float("-inf")).to(self.device), logits)
+            
             # Apply temperature scaling
             if temperature > 0.0:
                 logits = logits / temperature
@@ -31,15 +52,24 @@ class Inference:
             else:
                 # Get idx of the vocab entry with the highest logits value
                 idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch_size, 1)
-
-            if idx_next == eos_id:  # Stop generating early if end-of-sequence token is encountered
-                break
-
+            
+            # Check for end-of-sequence token (handle both single value and tensor)
+            if eos_id is not None:
+                if isinstance(eos_id, torch.Tensor):
+                    if torch.any(idx_next == eos_id):
+                        break
+                else:
+                    if torch.any(idx_next == eos_id):
+                        break
+            
             # Append sampled index to the running sequence
             idx = torch.cat((idx, idx_next), dim=1)  # (batch_size, num_tokens+1)
-
+        
         return idx
-    
+
+
+        
+        
 
 
 class Inferencing: 

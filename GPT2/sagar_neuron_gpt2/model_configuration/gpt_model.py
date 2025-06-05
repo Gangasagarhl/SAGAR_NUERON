@@ -1,7 +1,7 @@
 from torch import nn
 import torch
-from sagar_nueron_gpt2.transfomer.transformer_architecture import TransformerBlock
-from sagar_nueron_gpt2.transfomer.layer_norm import LayerNorm
+from sagar_neuron_gpt2.transfomer.transformer_architecture import TransformerBlock
+from sagar_neuron_gpt2.transfomer.layer_norm import LayerNorm
 
 
 # this defines the GPT model

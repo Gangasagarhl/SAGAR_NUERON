@@ -18,12 +18,18 @@ Make sure you have Python installed, then run the following commands to set up t
 To install the package without ML dependencies:
 pip install sagar-nueron-gpt2
 
-To include ML dependencies (torch and tiktoken):
-pip install sagar-nueron-gpt2[ml]
-
-
+Then you should install
 pip install torch
 pip install tiktoken
+pip install numpy
+
+
+To include ML dependencies (torch and tiktoken):
+pip install sagar-nueron-gpt2[ml]
+pip install numpy
+
+
+
 ```
 
 ---

@@ -1,7 +1,7 @@
 from torch import nn
-from sagar_nueron_gpt2.transfomer.masked_mutlihead_attention import MultiHeadAttention
-from sagar_nueron_gpt2.transfomer.feed_forward_NN import FeedForward
-from sagar_nueron_gpt2.transfomer.layer_norm import LayerNorm
+from sagar_neuron_gpt2.transfomer.masked_mutlihead_attention import MultiHeadAttention
+from sagar_neuron_gpt2.transfomer.feed_forward_NN import FeedForward
+from sagar_neuron_gpt2.transfomer.layer_norm import LayerNorm
 
 
 class TransformerBlock(nn.Module):
