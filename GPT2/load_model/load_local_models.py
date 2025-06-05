@@ -1,4 +1,4 @@
-from model_configuration.gpt_model import GPTModel
+from sagar_neuron_gpt2.model_configuration.gpt_model import GPTModel
 import torch
 
 class LoadWeightsAndPrepareModel: 
@@ -7,7 +7,8 @@ class LoadWeightsAndPrepareModel:
 
     def prepare_model(self,MODELCONFIG,path):
         model =  GPTModel(MODELCONFIG)
-        checkpoint = torch.load(path)
+        #checkpoint = torch.load(path)
+        checkpoint = torch.load(path, map_location='cpu' if not torch.cuda.is_available() else None)
         #model = GPTMomodeldel(GPT_CONFIG_124M)
         model.load_state_dict(checkpoint["model_state_dict"])
         #optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)

@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sagar_nueron_gpt2"
+name = "sagar_neuron_gpt2"
 version = "0.1.8"
 authors = [
   { name = "GANGASAGAR HL", email = "hlgsagar.1@gmail.com" },
