@@ -8,6 +8,8 @@ class Inference:
         """Initialize with device detection."""
         self.device = self._get_device()
         print(f"Using device: {self.device}")
+
+    
     
     def _get_device(self):
         """Detect and return the best available device."""
@@ -18,6 +20,8 @@ class Inference:
             return torch.device("mps")
         else:
             return torch.device("cpu")
+        
+    
     
     def generate(self, model, idx, max_new_tokens, context_size, temperature=0.0, top_k=None, eos_id=None):
         """Generate text by sampling from the model."""
@@ -76,9 +80,9 @@ class Inferencing:
     def __init__(self):
         print("Inference you are in\n")
 
-    def inference(self):
-        print("Hey this is to be used carefully so that to prevent loading mistakes.\nThe information will be stored in:\n ****file.txt***** ")
-        m = input("Check this and enter properly . Start looking at the Press ENTER: ")
+
+    def take_manual_input(self):
+      
         context_length = int(input("Enter the context lenght:  "))
         embedding_dimension =  int(input("Enter Embedding dimension: "))
         number_of_heads =  int(input("Enter the number of heads:  "))
@@ -95,6 +99,31 @@ class Inferencing:
             "drop_rate": 0.1,
             "qkv_bias": False
         }
+
+        return GPT_CONFIG
+    
+    
+    def take_config_from_file(self, path_to_config_file):
+        import ast
+        with open(path_to_config_file, 'r') as f:
+            config_str = f.read()
+        config_dict = ast.literal_eval(config_str)
+        return config_dict
+    
+
+
+    def inference(self):
+        GPT_CONFIG = None
+
+        choice = int(input("Choice:\n  1.Take config from file\n2.Manual input\n Enter 1 or 2:\n "))
+
+        if choice == 1:
+            path = input("Enter the path to config file:\n ")
+            GPT_CONFIG = self.take_config_from_file(path)
+
+        elif choice == 2:
+            GPT_CONFIG = self.take_manual_input()
+
 
         tokenizer = tiktoken.get_encoding("gpt2")
         conv = Converter()

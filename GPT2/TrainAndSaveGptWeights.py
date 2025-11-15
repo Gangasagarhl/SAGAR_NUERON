@@ -71,18 +71,31 @@ class EvaluateTrainModel:
         print(decoded_text.replace("\n", " "))  # Compact print format
         model.train()
 
+
+    #this is used for saving the model configuaration as txt format, later used at infrenece time
+    def saving_model_configurataion(self, folder_path, configuaration):
+        os.makedirs( f"{folder_path}/weights/", exist_ok = True)
+        with open(f"{folder_path}/weights/config.txt", "w") as f:
+            f.write(str(configuaration))
+
+
     def saving_weights_of_model_optimizer(self, model, optimizer, epoch,folder_path):
-        """Save model and optimizer weights."""
-        os.makedirs(f"{folder_path}/weghts", exist_ok=True)
+        os.makedirs(f"{folder_path}/weights", exist_ok=True)
         torch.save({
             "model_state_dict": model.state_dict(),
-        }, f"{folder_path}/weghts/model_epoch_{epoch}.pth")
+        }, f"{folder_path}/weights/model_epoch_{epoch}.pth")
         print(f"\n\nModel weights saved for epoch {epoch}")
 
         
 
     def train_gpt(self, model, train_loader, val_loader, optimizer, device,
-                  num_epochs, eval_freq, eval_iter, start_context, tokenizer, path_to_save_model_weights):
+                  num_epochs, eval_freq, eval_iter, start_context, tokenizer, path_to_save_model_weights, model_config=None):
+        
+
+        #this is used to save the model configuaration as txt format.
+        self.saving_model_configurataion(folder_path=path_to_save_model_weights, configuaration=model_config)
+
+
         """Train the model and evaluate periodically."""
         train_losses, val_losses, track_tokens_seen = [], [], []
         tokens_seen, global_step = 0, -1
@@ -138,24 +151,35 @@ def print_model_size_in_MB(model):
 class Execute: 
     def __init__(self):
         print("Now you are about to execute the training\n")
+
+    def space(self):
+        print("")
     
     def execute(self):
         start_time = time.time()
 
     # Model configuration
-        context_length = get_int_input("Context Length or Press ENTER for DEFAULT 256: ", 256)
-        embedding_dimension_of_each_token = get_int_input("Embedding Dimension of Each Token or Press ENTER for DEFAULT 768: ", 768)
+        context_length = get_int_input("Context Length or Press ENTER for DEFAULT 256:\n", 256)
+        self.space()
+        embedding_dimension_of_each_token = get_int_input("Embedding Dimension of Each Token or Press ENTER for DEFAULT 768:\n", 768)
+        self.space()
+
 
         nheads = 0
         while nheads == 0 or embedding_dimension_of_each_token % nheads != 0:
-            nheads = get_int_input(f"The number of heads must divide {embedding_dimension_of_each_token}: ", None)
+            nheads = get_int_input(f"The number of heads must divide {embedding_dimension_of_each_token}:\n", None)
+            self.space()
             if embedding_dimension_of_each_token % nheads == 0 and (embedding_dimension_of_each_token // nheads) < 64:
-                print(f"Each head will have dimension {embedding_dimension_of_each_token // nheads}, which is less than 64.\nPress 1 to proceed, 2 to re-enter nheads: ")
+                print(f"Each head will have dimension {embedding_dimension_of_each_token // nheads}, which is less than 64.\nPress 1 to proceed, 2 to re-enter nheads:\n")
                 choice = get_int_input("", None)
                 if choice == 2:
                     continue
 
-        number_of_transformer_layers = get_int_input("Number of Transformer Blocks or Press ENTER for DEFAULT 12: ", 12)
+        number_of_transformer_layers = get_int_input("Number of Transformer Blocks or Press ENTER for DEFAULT 12:\n", 12)
+        self.space()
+
+        drop_rate = get_int_input("Drop Rate or Press ENTER for DEFAULT 0.1:\n", 0.1)
+        self.space()
 
         GPT_CONFIG = {
             "vocab_size": 50257,
@@ -163,26 +187,19 @@ class Execute:
             "emb_dim": embedding_dimension_of_each_token,
             "n_heads": nheads,
             "n_layers": number_of_transformer_layers,
-            "drop_rate": 0.1,
+            "drop_rate": drop_rate,
             "qkv_bias": False
         }
 
-        info = f'''    
-            "vocab_size": 50257,\n
-            "context_length": {context_length},\n
-            "emb_dim": {embedding_dimension_of_each_token},\n
-            "n_heads": {nheads},\n
-            "n_layers": {number_of_transformer_layers},\n
-            "drop_rate": 0.1,\n
-            "qkv_bias": False,\n
-        '''
+        info = f''''''
 
 
         # Initialize data loaders
         inp = ""
         while inp == "" or not os.path.exists(inp):
-            inp = input("Give the path of the local file: ")
+            inp = input("Path to the '.txt' file to train model:\n ")       
             print("File path: ",inp)
+
 
         batch = int(input("Batch Size:  "))
         data_prep = DataProcessor_TrainValLoader(file_path=inp,
@@ -206,28 +223,40 @@ class Execute:
         size = print_model_size_in_MB(model=model)
         info += f"size: "+str(size)+"\n" 
 
-        ch = int(input("Enter 1.OK WITH THE MODEL SIZE  2.I'LL RE-ENTER THE CONFIGURATIONS"))
+        ch = int(input("Enter 1.OK WITH THE MODEL SIZE  2.I'LL RE-ENTER THE CONFIGURATIONS\n"))
         if ch==2:
             exit() 
 
 
-
         train = EvaluateTrainModel()
 
-        print("Input text (up to 100 words) to check model performance:")
+        print("Input text (up to 100 words) to check model performance:\n")
         start_context = input()
-        num_epochs = get_int_input("Number of epochs or Press ENTER for DEFAULT 10: ", 10)
-        path  = input("Enter the path to save the model_weights  which is to be passed as input while you make the inference: ") 
-        print("This is the path you have given: ",path)
+        self.space()
+        num_epochs = get_int_input("Number of epochs or Press ENTER for DEFAULT 10: \n", 10)
+        self.space()
+        path  = input("Enter the path to save the model_weights  which is to be passed as input while you make the inference:\n ")
+        self.space() 
+        print("This is the path you have given: \n",path)
 
         train_losses, val_losses, tokens_seen, model = train.train_gpt(
-            model, train_loader, val_loader, optimizer, device,
-            num_epochs=num_epochs, eval_freq=5, eval_iter=5,
-            start_context=start_context, tokenizer=tokenizer,path_to_save_model_weights=path
+            model, 
+            train_loader, 
+            val_loader, 
+            optimizer, 
+            device,
+            num_epochs=num_epochs, 
+            eval_freq=5, 
+            eval_iter=5,
+            start_context=start_context, 
+            tokenizer=tokenizer,
+            path_to_save_model_weights=path, 
+            model_config = GPT_CONFIG
         )
+
         info += "train_loss: "+str(train_losses)+"\n"+"val_loss: "+str(val_losses)+"\n"+"Weight save path:  "+str(path)+"\n"
 
-        with open(f'{path}/file.txt', 'w') as f:  
+        with open(f'{path}/weights/information.txt', 'w') as f:  
             f.writelines(info)
         
 
@@ -235,6 +264,7 @@ class Execute:
         execution_time_minutes = (end_time - start_time) / 60
         print(f"Training completed in {execution_time_minutes:.2f} minutes.")
             
+
 
 
 if __name__ == "__main__":
@@ -304,7 +334,6 @@ if __name__ == "__main__":
         exit() 
 
 
-
     train = EvaluateTrainModel()
 
     print("Input text (up to 100 words) to check model performance:")
@@ -314,13 +343,23 @@ if __name__ == "__main__":
     print("This is the path you have given: ",path)
 
     train_losses, val_losses, tokens_seen, model = train.train_gpt(
-        model, train_loader, val_loader, optimizer, device,
-        num_epochs=num_epochs, eval_freq=5, eval_iter=5,
-        start_context=start_context, tokenizer=tokenizer,path_to_save_model_weights=path
+        model, 
+        train_loader, 
+        val_loader, 
+        optimizer, 
+        device,
+        num_epochs=num_epochs, 
+        eval_freq=5, 
+        eval_iter=5,
+        start_context=start_context, 
+        tokenizer=tokenizer,
+        path_to_save_model_weights=path, 
+        model_config= GPT_CONFIG
     )
+
     info += "train_loss: "+str(train_losses)+"\n"+"val_loss: "+str(val_losses)+"\n"+"Weight save path:  "+str(path)+"\n"
 
-    with open(f'{path}/file.txt', 'w') as f:  
+    with open(f'{path}/weights/file.txt', 'w') as f:  
         f.writelines(info)
     
 
