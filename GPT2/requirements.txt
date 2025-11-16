@@ -1,5 +1,4 @@
-torch
+torch==2.2.0+cpu
 tiktoken
 numpy
 tqdm
-tensorflow>=2.15.0
