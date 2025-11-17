@@ -34,10 +34,6 @@ class GPTModel(nn.Module):
         return logits
 
 
-
-
-
-
 if __name__ ==  "__main__":
 
     GPT_CONFIG_124M = {

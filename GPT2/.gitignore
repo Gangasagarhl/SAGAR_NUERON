@@ -2,3 +2,6 @@ myenv
 __pycache__
 model_weights/*
 model_weights
+gpt2
+sagar_neuron_gpt2/model_weights/*
+sagar_neuron_gpt2/model_weights

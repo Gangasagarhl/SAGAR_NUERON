@@ -73,17 +73,17 @@ class EvaluateTrainModel:
 
 
     #this is used for saving the model configuaration as txt format, later used at infrenece time
-    def saving_model_configurataion(self, folder_path, configuaration):
-        os.makedirs( f"{folder_path}/weights/", exist_ok = True)
-        with open(f"{folder_path}/weights/config.txt", "w") as f:
+    def saving_model_configurataion(self, folder_path, configuaration,name_subfolder = 'weights'):
+        os.makedirs( f"{folder_path}/{name_subfolder}/", exist_ok = True)
+        with open(f"{folder_path}/{name_subfolder}/config.txt", "w") as f:
             f.write(str(configuaration))
 
 
-    def saving_weights_of_model_optimizer(self, model, optimizer, epoch,folder_path):
-        os.makedirs(f"{folder_path}/weights", exist_ok=True)
+    def saving_weights_of_model_optimizer(self, model, optimizer, epoch,folder_path,name_subfolder = 'weights'):
+        os.makedirs(f"{folder_path}/{name_subfolder}", exist_ok=True)
         torch.save({
             "model_state_dict": model.state_dict(),
-        }, f"{folder_path}/weights/model_epoch_{epoch}.pth")
+        }, f"{folder_path}/{name_subfolder}/model_epoch_{epoch}.pth")
         print(f"\n\nModel weights saved for epoch {epoch}")
 
         

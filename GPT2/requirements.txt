@@ -1,4 +1,6 @@
 torch==2.2.0+cpu
 tiktoken
-numpy
+numpy>=1.22,<2
 tqdm
+tensorflow==2.15.0
+pandas>=2.0,<3.0

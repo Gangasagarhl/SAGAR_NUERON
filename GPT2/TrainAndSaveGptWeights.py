@@ -27,6 +27,7 @@ converter = Converter()
 ########################################## TRAINING ARENA #####################
 
 class EvaluateTrainModel:
+    
     def evaluate_model(self, model, train_loader, val_loader, device, eval_iter):
         """Evaluate the model on training and validation data."""
         model.eval()

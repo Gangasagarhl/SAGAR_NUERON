@@ -9,6 +9,7 @@ import tiktoken
 
 class GPT2Loader:   
     
+
     def __init__(self, model_size="124M", models_dir="gpt2"):
         self.model_size = model_size
         self.models_dir = models_dir
@@ -26,13 +27,13 @@ class GPT2Loader:
         self.params =None
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
+    
+    def configuaration(self):
+        return self.GPT_CONFIG_124M
+    
     
     def load_model(self):
         self.settings, self.params = download_and_load_gpt2(model_size=self.model_size, models_dir=self.models_dir)
-
-
-   
 
     
     def check(self, settings, params):
@@ -47,6 +48,7 @@ class GPT2Loader:
     
     #This is used for implemnting the model with the radom weights
     def implement_model(self):
+
         model_configs =         {
         "gpt2-small (124M)": {"emb_dim": 768, "n_layers": 12, "n_heads": 12},
         "gpt2-medium (355M)": {"emb_dim": 1024, "n_layers": 24, "n_heads": 16},
@@ -81,6 +83,7 @@ class GPT2Loader:
         gpt.tok_emb.weight = assign(gpt.tok_emb.weight, params['wte'])
         
         for b in range(len(params["blocks"])):
+
             q_w, k_w, v_w = np.split(
                 (params["blocks"][b]["attn"]["c_attn"])["w"], 3, axis=-1)
             gpt.trf_blocks[b].att.W_query.weight = assign(
@@ -102,6 +105,7 @@ class GPT2Loader:
             gpt.trf_blocks[b].att.out_proj.weight = assign(
                 gpt.trf_blocks[b].att.out_proj.weight, 
                 params["blocks"][b]["attn"]["c_proj"]["w"].T)
+            
             gpt.trf_blocks[b].att.out_proj.bias = assign(
                 gpt.trf_blocks[b].att.out_proj.bias, 
                 params["blocks"][b]["attn"]["c_proj"]["b"])
@@ -109,6 +113,7 @@ class GPT2Loader:
             gpt.trf_blocks[b].ff.layers[0].weight = assign(
                 gpt.trf_blocks[b].ff.layers[0].weight, 
                 params["blocks"][b]["mlp"]["c_fc"]["w"].T)
+            
             gpt.trf_blocks[b].ff.layers[0].bias = assign(
                 gpt.trf_blocks[b].ff.layers[0].bias, 
                 params["blocks"][b]["mlp"]["c_fc"]["b"])
@@ -203,12 +208,12 @@ class GPT2Loader:
         torch.manual_seed(123)
 
         token_ids = self.generate(
-            model=model,
+            model=self.gpt,
             idx=self.text_to_token_ids(ask, self.tokenizer),
-            max_new_tokens=15,
+            max_new_tokens=100,
             context_size=self.GPT_CONFIG_124M["context_length"],
             top_k=25,
-            temperature=1.4
+            temperature=1
         )
 
         print("Output text:\n", self.token_ids_to_text(token_ids, self.tokenizer))
@@ -220,6 +225,10 @@ if __name__ == "__main__":
     gpt2_loader = GPT2Loader(model_size="124M", models_dir="gpt2")
     model = gpt2_loader.initialise()
     print("Model loaded and weights overridden successfully.")
+
+    print("\n\n")
+    print(model)
+    print("\n\n")
 
     ask = input("Chat with model:\nYou: ")
     gpt2_loader.let_the_model_speak(ask)
