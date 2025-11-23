@@ -35,9 +35,6 @@ class GPTModel(nn.Module):
 
 
 
-
-
-
 if __name__ ==  "__main__":
 
     GPT_CONFIG_124M = {

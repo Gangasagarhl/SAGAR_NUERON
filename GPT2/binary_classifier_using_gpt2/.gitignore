@@ -3,6 +3,9 @@ sms_spam_collection
 test.csv
 train.csv
 validation.csv
+test1.csv
+train1.csv
+validation1.csv
 sms_spam_collection.zip
 __pycache__/
 model_weights/*
@@ -85,3 +88,4 @@ docs/_build/
 target/
 .ipynb_checkpoints
 profile_default/
+*.csv

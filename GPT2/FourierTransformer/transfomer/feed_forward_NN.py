@@ -1,6 +1,6 @@
 
 from torch import nn
-from transfomer.gelu import GELU
+from FourierTransformer.transfomer.gelu import GELU
 
 class FeedForward(nn.Module):
     def __init__(self, cfg):

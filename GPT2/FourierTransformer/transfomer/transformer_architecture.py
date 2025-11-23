@@ -1,7 +1,7 @@
 from torch import nn
-from transfomer.masked_mutlihead_attention import MultiHeadAttention
-from transfomer.feed_forward_NN import FeedForward
-from transfomer.layer_norm import LayerNorm
+from FourierTransformer.transfomer.masked_mutlihead_attention import MultiHeadAttention
+from FourierTransformer.transfomer.feed_forward_NN import FeedForward
+from FourierTransformer.transfomer.layer_norm import LayerNorm
 
 
 class TransformerBlock(nn.Module):
@@ -13,7 +13,9 @@ class TransformerBlock(nn.Module):
             context_length=cfg["context_length"],
             num_heads=cfg["n_heads"], 
             dropout=cfg["drop_rate"],
-            qkv_bias=cfg["qkv_bias"])
+            qkv_bias=cfg["qkv_bias"]
+            )
+        
         self.ff = FeedForward(cfg)
         self.norm1 = LayerNorm(cfg["emb_dim"])
         self.norm2 = LayerNorm(cfg["emb_dim"])

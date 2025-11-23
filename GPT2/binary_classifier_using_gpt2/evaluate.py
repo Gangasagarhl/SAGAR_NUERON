@@ -11,7 +11,7 @@ class Evaluate:
 
         if num_batches is None:
             num_batches = len(data_loader)
-            print("NUmber of batches: ", num_batches)
+            print("Number of batches: ", num_batches)
 
         else:
             num_batches = min(num_batches, len(data_loader))

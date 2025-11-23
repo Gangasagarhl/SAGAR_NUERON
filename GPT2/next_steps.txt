@@ -1,0 +1,3 @@
+Save the weights and make it ready for inferenece. 
+Chec how dcct and idct works with the normal impbedding and by giving some values to it.  
+Then start building the fourrier transformer.

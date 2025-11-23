@@ -5,15 +5,16 @@ class LoadWeightsAndPrepareModel:
     def __init__(self):
         print("Loading and preparing model")
 
-    def prepare_model(self,MODELCONFIG,path):
+    def prepare_model(self,MODELCONFIG, path):
         model =  GPTModel(MODELCONFIG)
-        #checkpoint = torch.load(path)
+
+        if  'num_classes' in MODELCONFIG:
+            model.out_head = torch.nn.Linear(in_features=MODELCONFIG["emb_dim"], out_features=MODELCONFIG['num_classes'])
+
         checkpoint = torch.load(path, map_location='cpu' if not torch.cuda.is_available() else None)
-        #model = GPTMomodeldel(GPT_CONFIG_124M)
         model.load_state_dict(checkpoint["model_state_dict"])
-        #optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)
-        #optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         model.train()
 
         return model
-
+    
+    

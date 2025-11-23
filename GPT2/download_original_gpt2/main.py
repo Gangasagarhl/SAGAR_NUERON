@@ -2,6 +2,7 @@ import tensorflow as tf
 import tqdm
 from download_original_gpt2.download_weights import download_and_load_gpt2
 from sagar_neuron_gpt2.model_configuration.gpt_model import GPTModel
+from FourierTransformer.gptfourier import GPTModelFourier
 import torch
 import numpy as np
 import tiktoken
@@ -9,10 +10,10 @@ import tiktoken
 
 class GPT2Loader:   
     
-
     def __init__(self, model_size="124M", models_dir="gpt2"):
         self.model_size = model_size
         self.models_dir = models_dir
+
         self.GPT_CONFIG_124M = {
             "vocab_size": 50257,    # Vocabulary size
             "context_length": 1024, # Context length
@@ -20,9 +21,11 @@ class GPT2Loader:
             "n_heads": 12,          # Number of attention heads
             "n_layers": 12,         # Number of layers
             "drop_rate": 0.1,       # Dropout rate
-            "qkv_bias": False       # Query-Key-Value bias
+            "qkv_bias": True       # Query-Key-Value bias
             }
+        
         self.gpt =None
+        self.fourier_gpt =None
         self.settings =None 
         self.params =None
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -49,7 +52,7 @@ class GPT2Loader:
     #This is used for implemnting the model with the radom weights
     def implement_model(self):
 
-        model_configs =         {
+        model_configs ={
         "gpt2-small (124M)": {"emb_dim": 768, "n_layers": 12, "n_heads": 12},
         "gpt2-medium (355M)": {"emb_dim": 1024, "n_layers": 24, "n_heads": 16},
         "gpt2-large (774M)": {"emb_dim": 1280, "n_layers": 36, "n_heads": 20},
@@ -63,9 +66,33 @@ class GPT2Loader:
         NEW_CONFIG.update({"context_length": 1024, "qkv_bias": True})
         self.gpt = GPTModel(NEW_CONFIG)
         self.tokenizer = tiktoken.get_encoding("gpt2")
+
+
+
+    ## this is used to prepare the fourrier transfomer model with the random weights
+    def fourrier_model(self,retain_ratio, insert_every):
+
+        model_configs =         {
+        "gpt2-small (124M)": {"emb_dim": 768, "n_layers": 12, "n_heads": 12},
+        "gpt2-medium (355M)": {"emb_dim": 1024, "n_layers": 24, "n_heads": 16},
+        "gpt2-large (774M)": {"emb_dim": 1280, "n_layers": 36, "n_heads": 20},
+        "gpt2-xl (1558M)": {"emb_dim": 1600, "n_layers": 48, "n_heads": 25},
+        }
+
+        # Copy the base configuration and update with specific model settings
+        model_name = "gpt2-small (124M)"  # Example model name
+        NEW_CONFIG = self.GPT_CONFIG_124M.copy()
+        NEW_CONFIG.update(model_configs[model_name])
+        NEW_CONFIG.update({"context_length": 1024, "qkv_bias": True})
+        self.fourier_gpt = GPTModelFourier(NEW_CONFIG, retain_ratio=retain_ratio, insert_every=insert_every)
+        self.tokenizer = tiktoken.get_encoding("gpt2")
+
         
     def eval_gpt_model(self):
         self.gpt.eval()
+
+    def eval_fourrier_model(self):
+        self.fourier_gpt.eval()
     
 
     def helper_to_override(self,left, right):
@@ -73,9 +100,11 @@ class GPT2Loader:
             raise ValueError(f"Shape mismatch. Left: {left.shape}, Right: {right.shape}")
         return torch.nn.Parameter(torch.tensor(right))
     
-    def override_weights(self):
 
-        gpt = self.gpt
+
+    def override_weights(self,gpt):
+
+        
         assign = self.helper_to_override
         params = self.params
 
@@ -141,9 +170,18 @@ class GPT2Loader:
         gpt.final_norm.shift = assign(gpt.final_norm.shift, params["b"])
         gpt.out_head.weight = assign(gpt.out_head.weight, params["wte"])
 
+
+
+
     def get_model(self):
-        self.override_weights()
+        self.override_weights(self.gpt)
         self.gpt.to(self.device)
+
+
+
+    def get_fourrier_model(self):
+        self.override_weights(self.fourier_gpt)
+        self.fourier_gpt.to(self.device)
 
 
     def generate(self, model, idx, max_new_tokens, context_size, temperature=0.0, top_k=None, eos_id=None):
@@ -185,7 +223,9 @@ class GPT2Loader:
         return idx
     
 
+
     def initialise(self):
+
         self.load_model()
         self.check(self.settings, self.params)  # Uncomment to check settings and params
         self.implement_model()
@@ -193,6 +233,21 @@ class GPT2Loader:
         self.get_model()
 
         return self.gpt
+    
+
+
+
+    def initialise_fourrier(self, retain_ratio=0.5, insert_every=2):
+
+        self.load_model()
+        self.check(self.settings, self.params)  # Uncomment to check settings and params
+        self.fourrier_model(retain_ratio=retain_ratio, insert_every=insert_every)
+        self.eval_fourrier_model()
+        self.get_fourrier_model()
+
+        return self.fourier_gpt
+    
+
     
     def text_to_token_ids(self,text, tokenizer):
         encoded = tokenizer.encode(text, allowed_special={'<|endoftext|>'})
