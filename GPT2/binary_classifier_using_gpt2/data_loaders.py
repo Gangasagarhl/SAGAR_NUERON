@@ -6,28 +6,31 @@ import torch
 
 class Executer:
 
-    def __init__(self, path_to_data=None):
+    def __init__(self, train_path=None, test_path=None, val_path=None):
         self.tokenizer = tiktoken.get_encoding("gpt2")
         self.train_dataset, self.val_dataset, self.test_dataset = None, None, None
         self.train_loader, self.val_loader, self.test_loader = None, None, None
-        self.folder_path =  path_to_data
+        #self.folder_path =  path_to_data
+        self.train_path = train_path
+        self.test_path = test_path
+        self.val_path = val_path
 
 
 
     def execute_datasets(self):
         self.train_dataset = SpamDataset(
-            csv_file = f"{self.folder_path}/train.csv",
+            csv_file = self.train_path,
             max_length=None,
             tokenizer=self.tokenizer
             )
         
         self.val_dataset = SpamDataset(
-            csv_file= f"{self.folder_path}/validation.csv",
+            csv_file= self.val_path,
             max_length=self.train_dataset.max_length,
             tokenizer=self.tokenizer
         )
         self.test_dataset = SpamDataset(
-            csv_file= f"{self.folder_path}/test.csv",
+            csv_file= self.test_path,
             max_length=self.train_dataset.max_length,
             tokenizer=self.tokenizer
         )
