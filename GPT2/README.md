@@ -63,7 +63,7 @@ exe.inference()
 ---
 
 
-###  Binary Classifiers via Transfomers and Fourier Transformers
+###  Binary Classifiers via Transfomers and Fourier Transformers[Not published to pypi hub]
 
 To Run Binary classifer demo, run the following:
 
